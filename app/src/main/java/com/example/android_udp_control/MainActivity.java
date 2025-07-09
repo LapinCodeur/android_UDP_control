@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
                 buttonNext.setEnabled(false);
                 editTextPort.getText().clear();
                 editTextPort.setText("192.168.", TextView.BufferType.EDITABLE);
-                editTextPort.setText("20001", TextView.BufferType.EDITABLE);
+                editTextPort.setText("8888", TextView.BufferType.EDITABLE);
                 updateTexts("waiting for connection", " ");
             }
         });

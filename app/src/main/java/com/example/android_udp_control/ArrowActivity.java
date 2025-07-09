@@ -116,7 +116,7 @@ public class ArrowActivity extends AppCompatActivity
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        message = "up";
+                        message = "255,255,0";
                         return true;
 
                     case MotionEvent.ACTION_UP:
@@ -136,7 +136,7 @@ public class ArrowActivity extends AppCompatActivity
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        message = "down";
+                        message = "-255,-255,0";
                         return true;
 
                     case MotionEvent.ACTION_UP:
@@ -156,7 +156,7 @@ public class ArrowActivity extends AppCompatActivity
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        message = "left";
+                        message = "-255,255,0";
                         return true;
 
                     case MotionEvent.ACTION_UP:
@@ -177,7 +177,7 @@ public class ArrowActivity extends AppCompatActivity
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        message = "right";
+                        message = "255,-255,0";
                         return true;
 
                     case MotionEvent.ACTION_UP:
@@ -197,7 +197,7 @@ public class ArrowActivity extends AppCompatActivity
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        message = "upleft";
+                        message = "127,255,0";
                         return true;
 
                     case MotionEvent.ACTION_UP:
@@ -217,7 +217,7 @@ public class ArrowActivity extends AppCompatActivity
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        message = "upright";
+                        message = "255,127,0";
                         return true;
 
                     case MotionEvent.ACTION_UP:
@@ -237,7 +237,7 @@ public class ArrowActivity extends AppCompatActivity
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        message = "downleft";
+                        message = "-127,-255,0";
                         return true;
 
                     case MotionEvent.ACTION_UP:
@@ -257,7 +257,7 @@ public class ArrowActivity extends AppCompatActivity
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        message = "downright";
+                        message = "-255,-127,0";
                         return true;
 
                     case MotionEvent.ACTION_UP:

@@ -9,7 +9,7 @@
     <string name="hintAddr">server address</string>
     <string name="defaultAddr">192.168.</string>
     <string name="hintPort">server port</string>
-    <string name="defaultPort">20001</string>
+    <string name="defaultPort">8888</string>
     <string name="initPosValue">0.00</string>
     <string name="initThetaValue">0</string>
     <string name="xLabel">X: </string>

@@ -2,6 +2,7 @@ package com.example.android_udp_control;
 
 import java.io.IOException;
 import java.net.*;
+import java.nio.*;
 
 
 public class UDPClient
@@ -26,38 +27,7 @@ public class UDPClient
     {
         try {
             address = InetAddress.getByName(hostname);
-            socket = new DatagramSocket(20001);
-
-            byte[] buf = msg.getBytes();
-            DatagramPacket request = new DatagramPacket(buf, buf.length, address, port);
-            socket.send(request);
-            socket.setSoTimeout(5000);
-
-            byte[] buffer = new byte[512];
-
-            try {
-                DatagramPacket response = new DatagramPacket(buffer, buffer.length);
-                socket.receive(response);
-                String rxMsg = new String(buffer, 0, response.getLength());
-
-                if (rxMsg.equals(rxCorrectMsg))
-                    return 1;
-                else
-                    return 0;
-            }
-            catch (SocketTimeoutException ex) {
-                System.out.println("Timeout reached!!! " + ex);
-                socket.close();
-                return -2;
-            }
-            catch (SocketException ex) {
-                System.out.println("Socket exception ");
-                return -3;
-            }
-        }
-        catch(IOException ex) {
-            System.out.println("Input exception");
-            return -4;
+            socket = new DatagramSocket(8888);
         }
         catch (Exception ex) {
             System.out.println("Caught an exception!");
@@ -65,6 +35,7 @@ public class UDPClient
             socket.close();
             return -1;
         }
+        return 1;
     }
 
     public void closeSocket()
@@ -77,7 +48,7 @@ public class UDPClient
     {
         try {
             address = InetAddress.getByName(hostname);
-            socket = new DatagramSocket(20001);
+            socket = new DatagramSocket(8888);
         }
         catch (Exception ex) {
             System.out.println("Caught an exception while setting the socket!");
@@ -88,9 +59,26 @@ public class UDPClient
     public void sendCommand(String msg)
     {
         try {
-            byte[] buf = msg.getBytes();
-            DatagramPacket request = new DatagramPacket(buf, buf.length, address, port);
-            socket.send(request);
+            if (msg.equals("none"))  {
+                msg = "0,0,0";
+            }
+            // Expected format: "L,R,A" (e.g. "1200,1100,900")
+            String[] parts = msg.split(",");
+            if (parts.length != 3) return;
+
+            int L_motor = Integer.parseInt(parts[0].trim());
+            int R_motor = Integer.parseInt(parts[1].trim());
+            int arm_pos = Integer.parseInt(parts[2].trim());
+
+            ByteBuffer buffer = ByteBuffer.allocate(6);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+            buffer.putShort((short)(L_motor & 0xFFFF));
+            buffer.putShort((short)(R_motor & 0xFFFF));
+            buffer.putShort((short)(arm_pos & 0xFFFF));
+            byte[] data = buffer.array();
+
+            DatagramPacket packet = new DatagramPacket(data, data.length, address, port);
+            socket.send(packet);
         }
         catch (Exception ex) {
             System.out.println("Caught an exception while sending a request!");

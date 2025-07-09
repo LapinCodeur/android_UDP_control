@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_UDP_control">
 
-        <activity android:name=".MainActivity"
+        <activity android:name=".MainActivity" android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,11 +22,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ArrowActivity"
+        <activity android:name=".ArrowActivity" android:exported="false"
             android:screenOrientation="portrait">
         </activity>
 
-        <activity android:name=".PoseCommandActivity"
+        <activity android:name=".PoseCommandActivity" android:exported="false"
             android:screenOrientation="portrait">
         </activity>
 
