@@ -54,19 +54,12 @@ public class UDPClient
         }
     }
 
-    public void sendCommand(String msg)
+    public void sendCommand(int[] command)
     {
         try {
-            if (msg.equals("none"))  {
-                msg = "0,0,0";
-            }
-            // Expected format: "L,R,A" (e.g. "1200,1100,900")
-            String[] parts = msg.split(",");
-            if (parts.length != 3) return;
-
-            int L_motor = Integer.parseInt(parts[0].trim());
-            int R_motor = Integer.parseInt(parts[1].trim());
-            int arm_pos = Integer.parseInt(parts[2].trim());
+            int L_motor = command[0];
+            int R_motor = command[1];
+            int arm_pos = command[2];
 
             ByteBuffer buffer = ByteBuffer.allocate(6);
             buffer.order(ByteOrder.LITTLE_ENDIAN);

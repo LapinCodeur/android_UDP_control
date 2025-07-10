@@ -20,10 +20,10 @@ import java.util.concurrent.Executors;
 
 public class ArrowActivity extends AppCompatActivity
 {
-    private static final String MSG_NONE    = "none";
-    String message                          = MSG_NONE;
+    int[] message                          = {0,0,180};
 
     private ImageButton up, down, left, right, center, previous, upleftarrow, uprightarrow, downleftarrow, downrightarrow;
+    private int arm_pos = 180;
     static TextView textX, textY, textTheta;
     UDPClient myUdpClient;
     Bundle bundle;
@@ -106,7 +106,7 @@ public class ArrowActivity extends AppCompatActivity
 
         previous.setOnClickListener(v -> {
             closeThread(udpThread);
-            sendCommandAndCloseTheSocket(MSG_NONE);
+            closeTheSocket();
             closeThread(rxThread);
 
             Intent changeToMain = new Intent(ArrowActivity.this, MainActivity.class);
@@ -114,7 +114,11 @@ public class ArrowActivity extends AppCompatActivity
         });
 
         center.setOnClickListener(v -> {
-            message = "0,0,180";
+            arm_pos -= 180;
+            if (arm_pos < 0)    {
+                arm_pos = 180;
+            }
+            message = new int[]{0, 0, arm_pos};
         });
 
         udpThread.start();
@@ -122,29 +126,29 @@ public class ArrowActivity extends AppCompatActivity
     }
 
     private void setupTouchListeners() {
-        setTouchListener(up, "255,255,0");
-        setTouchListener(down, "-255,-255,0");
-        setTouchListener(left, "-255,255,0");
-        setTouchListener(right, "255,-255,0");
-        setTouchListener(upleftarrow, "127,255,0");
-        setTouchListener(uprightarrow, "255,127,0");
-        setTouchListener(downleftarrow, "-127,-255,0");
-        setTouchListener(downrightarrow, "-255,-127,0");
+        setTouchListener(up, 255, 255);
+        setTouchListener(down, -255, -255);
+        setTouchListener(left, -255, 255);
+        setTouchListener(right, 255, -255);
+        setTouchListener(upleftarrow, 127, 255);
+        setTouchListener(uprightarrow, 255, 127);
+        setTouchListener(downleftarrow, -127, -255);
+        setTouchListener(downrightarrow, -255, -127);
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void setTouchListener(ImageButton button, final String command) {
+    private void setTouchListener(ImageButton button, final int r_motor, final int l_motor) {
         button.setOnTouchListener((v, motionEvent) -> {
             switch (motionEvent.getAction())
             {
                 case MotionEvent.ACTION_DOWN:
-                    message = command;
+                    message = new int[]{r_motor, l_motor, arm_pos};
                     v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                     return true;
 
                 case MotionEvent.ACTION_UP:
                     v.performClick();
-                    message = MSG_NONE;
+                    message = new int[]{0, 0, arm_pos};
                     return true;
             }
             return false;
@@ -176,11 +180,10 @@ public class ArrowActivity extends AppCompatActivity
         }
     }
 
-    public void sendCommandAndCloseTheSocket(String messageToSend)
+    public void closeTheSocket()
     {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            myUdpClient.sendCommand(messageToSend);
             myUdpClient.closeSocket();
         });
     }
