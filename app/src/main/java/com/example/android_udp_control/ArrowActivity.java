@@ -1,5 +1,7 @@
 package com.example.android_udp_control;
 
+import android.view.HapticFeedbackConstants;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -100,133 +102,7 @@ public class ArrowActivity extends AppCompatActivity
             }
         });
 
-
-        up.setOnTouchListener((v, motionEvent) -> {
-            switch (motionEvent.getAction())
-            {
-                case MotionEvent.ACTION_DOWN:
-                    message = "255,255,0";
-                    return true;
-
-                case MotionEvent.ACTION_UP:
-                    v.performClick();
-                    message = "none";
-                    return true;
-            }
-            return false;
-        });
-
-
-        down.setOnTouchListener((v, motionEvent) -> {
-            switch (motionEvent.getAction())
-            {
-                case MotionEvent.ACTION_DOWN:
-                    message = "-255,-255,0";
-                    return true;
-
-                case MotionEvent.ACTION_UP:
-                    v.performClick();
-                    message = "none";
-                    return true;
-            }
-            return false;
-        });
-
-
-        left.setOnTouchListener((v, motionEvent) -> {
-            switch (motionEvent.getAction())
-            {
-                case MotionEvent.ACTION_DOWN:
-                    message = "-255,255,0";
-                    return true;
-
-                case MotionEvent.ACTION_UP:
-                    v.performClick();
-                    message = "none";
-                    return true;
-            }
-            return false;
-        });
-
-
-        right.setOnTouchListener((v, motionEvent) -> {
-            switch (motionEvent.getAction())
-            {
-                case MotionEvent.ACTION_DOWN:
-                    message = "255,-255,0";
-                    return true;
-
-                case MotionEvent.ACTION_UP:
-                    v.performClick();
-                    message = "none";
-                    return true;
-            }
-            return false;
-        });
-
-
-        upleftarrow.setOnTouchListener((v, motionEvent) -> {
-            switch (motionEvent.getAction())
-            {
-                case MotionEvent.ACTION_DOWN:
-                    message = "127,255,0";
-                    return true;
-
-                case MotionEvent.ACTION_UP:
-                    v.performClick();
-                    message = "none";
-                    return true;
-            }
-            return false;
-        });
-
-
-        uprightarrow.setOnTouchListener((v, motionEvent) -> {
-            switch (motionEvent.getAction())
-            {
-                case MotionEvent.ACTION_DOWN:
-                    message = "255,127,0";
-                    return true;
-
-                case MotionEvent.ACTION_UP:
-                    v.performClick();
-                    message = "none";
-                    return true;
-            }
-            return false;
-        });
-
-
-        downleftarrow.setOnTouchListener((v, motionEvent) -> {
-            switch (motionEvent.getAction())
-            {
-                case MotionEvent.ACTION_DOWN:
-                    message = "-127,-255,0";
-                    return true;
-
-                case MotionEvent.ACTION_UP:
-                    v.performClick();
-                    message = "none";
-                    return true;
-            }
-            return false;
-        });
-
-
-        downrightarrow.setOnTouchListener((v, motionEvent) -> {
-            switch (motionEvent.getAction())
-            {
-                case MotionEvent.ACTION_DOWN:
-                    message = "-255,-127,0";
-                    return true;
-
-                case MotionEvent.ACTION_UP:
-                    v.performClick();
-                    message = "none";
-                    return true;
-            }
-            return false;
-        });
+        setupTouchListeners();
 
         previous.setOnClickListener(v -> {
             closeThread(udpThread);
@@ -238,20 +114,41 @@ public class ArrowActivity extends AppCompatActivity
         });
 
         center.setOnClickListener(v -> {
-            closeThread(udpThread);
-            sendCommandAndCloseTheSocket(MSG_NONE);
-            closeThread(rxThread);
-
-            Intent changeToDesired = new Intent(getApplicationContext(), PoseCommandActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("udpAddress", udpAddress);
-            bundle.putInt("udpPort", updPort);
-            changeToDesired.putExtras(bundle);
-            startActivity(changeToDesired);
+            message = "0,0,180";
         });
 
         udpThread.start();
         rxThread.start();
+    }
+
+    private void setupTouchListeners() {
+        setTouchListener(up, "255,255,0");
+        setTouchListener(down, "-255,-255,0");
+        setTouchListener(left, "-255,255,0");
+        setTouchListener(right, "255,-255,0");
+        setTouchListener(upleftarrow, "127,255,0");
+        setTouchListener(uprightarrow, "255,127,0");
+        setTouchListener(downleftarrow, "-127,-255,0");
+        setTouchListener(downrightarrow, "-255,-127,0");
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setTouchListener(ImageButton button, final String command) {
+        button.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getAction())
+            {
+                case MotionEvent.ACTION_DOWN:
+                    message = command;
+                    v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                    return true;
+
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+                    message = MSG_NONE;
+                    return true;
+            }
+            return false;
+        });
     }
 
     public static void updatePosition(String x, String y, String theta)
