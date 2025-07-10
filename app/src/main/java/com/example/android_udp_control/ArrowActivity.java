@@ -6,10 +6,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+
 import android.view.MotionEvent;
-import android.view.View;
+
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -19,9 +18,8 @@ import java.util.concurrent.Executors;
 
 public class ArrowActivity extends AppCompatActivity
 {
-    String changeToAutonomousRideMsg = "Change to autonomous ride view";
-    String goodbyeMsg                = "Bye UDP server";
-    String message                   = "none";
+    private static final String MSG_NONE    = "none";
+    String message                          = MSG_NONE;
 
     private ImageButton up, down, left, right, center, previous, upleftarrow, uprightarrow, downleftarrow, downrightarrow;
     static TextView textX, textY, textTheta;
@@ -31,6 +29,7 @@ public class ArrowActivity extends AppCompatActivity
     String udpAddress;
     int updPort;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -73,230 +72,182 @@ public class ArrowActivity extends AppCompatActivity
         textY     = findViewById(R.id.y_pos);
         textTheta = findViewById(R.id.theta_pos);
 
-        Thread udpThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(!Thread.currentThread().isInterrupted()) {
-                    try {
-                        myUdpClient.sendCommand(message);
-                        System.out.println(message);
-                        Thread.sleep(50);
-                    }
-                    catch(Exception e) {
-                        System.out.println("Caught an exception while sleeping");
-                        Thread.currentThread().interrupt();
-                        e.printStackTrace();
-                    }
+        Thread udpThread = new Thread(() -> {
+            while(!Thread.currentThread().isInterrupted()) {
+                try {
+                    myUdpClient.sendCommand(message);
+                    System.out.println(message);
+                    Thread.sleep(50);
+                }
+                catch(Exception e) {
+                    System.out.println("Caught an exception while sleeping");
+                    Thread.currentThread().interrupt();
+                    e.printStackTrace();
                 }
             }
         });
 
-        Thread rxThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(!Thread.currentThread().isInterrupted()) {
-                    try {
-                        String message = myUdpClient.receiveData();
-                        String[] positionArray = message.split(",");
-                        runOnUiThread(new UpdatePositionRunnable(positionArray[0], positionArray[1], positionArray[2]));
-                    }
-                    catch(Exception e) {
-                        System.out.println("Caught an exception while receiving message");
-                    }
+        Thread rxThread = new Thread(() -> {
+            while(!Thread.currentThread().isInterrupted()) {
+                try {
+                    String message = myUdpClient.receiveData();
+                    String[] positionArray = message.split(",");
+                    runOnUiThread(new UpdatePositionRunnable(positionArray[0], positionArray[1], positionArray[2]));
+                }
+                catch(Exception e) {
+                    System.out.println("Caught an exception while receiving message");
                 }
             }
         });
 
 
-        up.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent motionEvent)
+        up.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getAction())
             {
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        message = "255,255,0";
-                        return true;
+                case MotionEvent.ACTION_DOWN:
+                    message = "255,255,0";
+                    return true;
 
-                    case MotionEvent.ACTION_UP:
-                        message = "none";
-                        return true;
-                }
-                return false;
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+                    message = "none";
+                    return true;
             }
+            return false;
         });
 
 
-        down.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent motionEvent)
+        down.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getAction())
             {
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        message = "-255,-255,0";
-                        return true;
+                case MotionEvent.ACTION_DOWN:
+                    message = "-255,-255,0";
+                    return true;
 
-                    case MotionEvent.ACTION_UP:
-                        message = "none";
-                        return true;
-                }
-                return false;
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+                    message = "none";
+                    return true;
             }
+            return false;
         });
 
 
-        left.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent motionEvent)
+        left.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getAction())
             {
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        message = "-255,255,0";
-                        return true;
+                case MotionEvent.ACTION_DOWN:
+                    message = "-255,255,0";
+                    return true;
 
-                    case MotionEvent.ACTION_UP:
-                        message = "none";
-                        return true;
-                }
-                return false;
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+                    message = "none";
+                    return true;
             }
+            return false;
         });
 
 
-        right.setOnTouchListener(new View.OnTouchListener()
-        {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent motionEvent)
+        right.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getAction())
             {
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        message = "255,-255,0";
-                        return true;
+                case MotionEvent.ACTION_DOWN:
+                    message = "255,-255,0";
+                    return true;
 
-                    case MotionEvent.ACTION_UP:
-                        message = "none";
-                        return true;
-                }
-                return false;
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+                    message = "none";
+                    return true;
             }
+            return false;
         });
 
 
-        upleftarrow.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent motionEvent)
+        upleftarrow.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getAction())
             {
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        message = "127,255,0";
-                        return true;
+                case MotionEvent.ACTION_DOWN:
+                    message = "127,255,0";
+                    return true;
 
-                    case MotionEvent.ACTION_UP:
-                        message = "none";
-                        return true;
-                }
-                return false;
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+                    message = "none";
+                    return true;
             }
+            return false;
         });
 
 
-        uprightarrow.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent motionEvent)
+        uprightarrow.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getAction())
             {
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        message = "255,127,0";
-                        return true;
+                case MotionEvent.ACTION_DOWN:
+                    message = "255,127,0";
+                    return true;
 
-                    case MotionEvent.ACTION_UP:
-                        message = "none";
-                        return true;
-                }
-                return false;
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+                    message = "none";
+                    return true;
             }
+            return false;
         });
 
 
-        downleftarrow.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent motionEvent)
+        downleftarrow.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getAction())
             {
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        message = "-127,-255,0";
-                        return true;
+                case MotionEvent.ACTION_DOWN:
+                    message = "-127,-255,0";
+                    return true;
 
-                    case MotionEvent.ACTION_UP:
-                        message = "none";
-                        return true;
-                }
-                return false;
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+                    message = "none";
+                    return true;
             }
+            return false;
         });
 
 
-        downrightarrow.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent motionEvent)
+        downrightarrow.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getAction())
             {
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        message = "-255,-127,0";
-                        return true;
+                case MotionEvent.ACTION_DOWN:
+                    message = "-255,-127,0";
+                    return true;
 
-                    case MotionEvent.ACTION_UP:
-                        message = "none";
-                        return true;
-                }
-                return false;
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+                    message = "none";
+                    return true;
             }
-
+            return false;
         });
 
-        previous.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                closeThread(udpThread);
-                sendCommandAndCloseTheSocket(goodbyeMsg);
-                closeThread(rxThread);
+        previous.setOnClickListener(v -> {
+            closeThread(udpThread);
+            sendCommandAndCloseTheSocket(MSG_NONE);
+            closeThread(rxThread);
 
-                Intent changeToMain = new Intent(ArrowActivity.this, MainActivity.class);
-                startActivity(changeToMain);
-            }
+            Intent changeToMain = new Intent(ArrowActivity.this, MainActivity.class);
+            startActivity(changeToMain);
         });
 
-        center.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closeThread(udpThread);
-                sendCommandAndCloseTheSocket(changeToAutonomousRideMsg);
-                closeThread(rxThread);
+        center.setOnClickListener(v -> {
+            closeThread(udpThread);
+            sendCommandAndCloseTheSocket(MSG_NONE);
+            closeThread(rxThread);
 
-                Intent changeToDesired = new Intent(getApplicationContext(), PoseCommandActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("udpAddress", udpAddress);
-                bundle.putInt("udpPort", updPort);
-                changeToDesired.putExtras(bundle);
-                startActivity(changeToDesired);
-            }
+            Intent changeToDesired = new Intent(getApplicationContext(), PoseCommandActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("udpAddress", udpAddress);
+            bundle.putInt("udpPort", updPort);
+            changeToDesired.putExtras(bundle);
+            startActivity(changeToDesired);
         });
 
         udpThread.start();
@@ -331,12 +282,9 @@ public class ArrowActivity extends AppCompatActivity
     public void sendCommandAndCloseTheSocket(String messageToSend)
     {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                myUdpClient.sendCommand(messageToSend);
-                myUdpClient.closeSocket();
-            }
+        executor.execute(() -> {
+            myUdpClient.sendCommand(messageToSend);
+            myUdpClient.closeSocket();
         });
     }
 }

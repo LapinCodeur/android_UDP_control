@@ -7,8 +7,6 @@ import java.nio.*;
 
 public class UDPClient
 {
-    String msg          = "Hello UDP server";
-    String rxCorrectMsg = "OK";
     String hostname;
     int port;
     DatagramSocket socket;
